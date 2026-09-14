@@ -47,7 +47,7 @@ In this level, both `/usr/sbin/john` and `/rofs/usr/sbin/john` were found during
 Here is the command to check it:
 
 ```sh
-cat /usr/sbin/john | tr 'A-Za-z' 'L-ZA-KI-za-k'
+cat /usr/sbin/john | tr 'A-Za-z' 'L-ZA-Kl-za-k'
 ```
 
 Using dCode's Cipher Identifier, the string can be identified as a Caesar cipher. After testing the possible shifts, it produces readable plaintext.
