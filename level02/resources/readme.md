@@ -73,8 +73,8 @@ The original raw bytes are:
 
 ```text
 66 74 5f 77 61 6e 64 72 7f 7f 7f 4e 44 52 65 6c 7f 4c 30 4c 0d
-                        ^^ ^^ ^^             ^^          ^^
-                       DEL DEL DEL           DEL         Enter
+                        ^^ ^^ ^^                ^^       ^^
+                       DEL DEL DEL              DEL      Enter
 ```
 
 There are four DEL characters in total. Each DEL character removes the character immediately before it:
