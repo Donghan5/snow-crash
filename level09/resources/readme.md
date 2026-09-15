@@ -79,6 +79,7 @@ TOKEN_PATH = Path("/home/user/level09/token")
 
 try:
     content = TOKEN_PATH.read_bytes()
+# Check this line
 except OSError as e:
     raise SystemExit(f"failed to read token: {e}")
 
