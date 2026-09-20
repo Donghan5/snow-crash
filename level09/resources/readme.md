@@ -73,28 +73,34 @@ vi /tmp/reverse.py
 
 ```python
 #!/usr/bin/python
-from pathlib import Path
 
-TOKEN_PATH = Path("/home/user/level09/token")
+import sys
+
+TOKEN_PATH = "/home/user/level09/token"
 
 try:
-    content = TOKEN_PATH.read_bytes()
-# Check this line
-except OSError as e:
-    raise SystemExit(f"failed to read token: {e}")
+    with open(TOKEN_PATH, "rb") as f:
+        content = f.read()
+except (IOError, OSError) as e:
+    raise SystemExit("failed to read token: {}".format(e))
 
-content = content.rstrip(b"\n")
+content = content.rstrip("\n")
 
 for i, byte in enumerate(content):
-    decoded = byte - i
+    encoded = ord(byte)
+    decoded = encoded - i
 
     if not 0 <= decoded <= 127:
         raise ValueError(
-            f"decoded value out of ASCII range: "
-            f"index={i}, encoded={byte}, decoded={decoded}"
+            "decoded value out of ASCII range: "
+            "index={}, encoded={}, decoded={}".format(
+                i, encoded, decoded
+            )
         )
 
-    print(chr(decoded), end="")
+    sys.stdout.write(chr(decoded))
+
+sys.stdout.write("\n")
 ```
 
 Run the script:
