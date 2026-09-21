@@ -62,27 +62,37 @@ The important part is:
 
 After `getuid()` returns, the UID is stored in `$eax`. The program compares `$eax` with `0x1092`, which is `4242` in decimal. If the values match, execution jumps to the code that calls `ft_des()` and prints the token.
 
-We can use `gdb` to stop after the check fails and replace `$eax` with the expected value:
+Set a breakpoint on the `cmp` instruction, then replace `$eax` *before* the comparison executes. This lets `cmp` set the equality flag using the forged value:
 
 ```sh
-(gdb) break *0x080485a1
-Breakpoint 1 at 0x80485a1
+(gdb) break *0x0804859a
+Breakpoint 1 at 0x804859a
+(gdb) display/d $eax
 (gdb) run
 Starting program: /home/user/level13/level13
 
-Breakpoint 1, 0x080485a1 in main ()
-
-(gdb) display/d $eax
+Breakpoint 1, 0x0804859a in main ()
 1: /d $eax = 2013
 (gdb) set $eax=0x1092
-(gdb) display/d $eax
-2: /d $eax = 4242
+(gdb) continue
+Continuing.
+
+Breakpoint 1, 0x0804859f in main ()
+1: /d $eax = 4242
 (gdb) continue
 Continuing.
 your token is 2A31L79asukciNyi8uppkEuSx
-[Inferior 1 (process 26399) exited with code 050]
+[Inferior 1 (process 17186) exited with code 050]
 ```
 
-The breakpoint is set at `0x080485a1`, just after the failed comparison path begins. At that point, `$eax` still contains our real UID, `2013`. Setting `$eax` to `0x1092` changes it to `4242`, so the program continues as if the UID check had passed.
+The breakpoint at `0x0804859a` stops immediately before:
+
+```asm
+cmp $0x1092,%eax
+```
+
+At that moment, `$eax` contains the real UID, `2013`. `set $eax=0x1092` changes it to `4242`; continuing executes `cmp` with matching operands. The following `je` at `0x0804859f` therefore takes the success branch at `0x080485cb`, which calls `ft_des()` and prints the token.
+
+Setting `$eax` only after the comparison has executed is not sufficient: `je` uses the flags produced by `cmp`, rather than performing a new comparison. Stopping at the comparison instruction and changing the register first is the essential detail.
 
 After continuing execution, the program prints the token for the next level.
